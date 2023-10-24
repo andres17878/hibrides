@@ -1,0 +1,25 @@
+{
+
+"elements": [
+
+    {
+        "id": 1,
+        "name": "Pa",
+        "quantity": 1
+    },
+
+    {
+        "id": 2,
+        "name": "Llet",
+        "quantity": 1
+    },
+
+    {
+        "id": 3,
+        "name": "Ous",
+        "quantity": 6
+    }
+
+]
+
+}

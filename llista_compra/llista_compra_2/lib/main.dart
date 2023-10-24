@@ -1,70 +1,24 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
+import 'package:llista_compra_2/ui_widgets/comptador_enter.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter TextField y ListView',
+      title: 'Llista de la compra',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class Qu extends StatefulWidget {
-  const Qu({super.key});
-
-  @override
-  State<Qu> createState() => _QuState();
-}
-
-class _QuState extends State<Qu> {
-  int comptador = 1;
-
-  void _incrementa() {
-    setState(() {
-      comptador++;
-    });
-  }
-
-  void _decrementa() {
-    setState(() {
-      if (comptador > 0) {
-        comptador--;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text('$comptador'),
-        Column(
-          children: <Widget>[
-            IconButton(onPressed: _incrementa, icon: const Icon(Icons.add)),
-            IconButton(onPressed: _decrementa, icon: const Icon(Icons.remove)),
-          ],
-        ),
-        IconButton(onPressed: _decrementa, icon: const Icon(Icons.delete)),
-      ],
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -80,16 +34,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _removeItemFromList(String esborrat) {
+    setState(() {
+      _items.remove(esborrat);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TextField y ListView'),
+        title: Text('Llista compra'),
       ),
       body: ElMeuBody(
         textEditingController: _textEditingController,
         addItemToList: _addItemToList,
         items: _items,
+        removeItemFromList: _removeItemFromList,
       ),
     );
   }
@@ -99,13 +60,18 @@ class ElMeuBody extends StatelessWidget {
   final TextEditingController textEditingController;
   final List<String> items;
   final Function(String) addItemToList;
+  final Function(String) removeItemFromList;
 
-  const ElMeuBody({
-    super.key,
+  ElMeuBody({
     required this.textEditingController,
     required this.items,
     required this.addItemToList,
+    required this.removeItemFromList,
   });
+
+  void removeItem(String nom) {
+    removeItemFromList(nom);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +81,7 @@ class ElMeuBody extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: TextField(
             controller: textEditingController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Ingresi un article',
               border: OutlineInputBorder(),
             ),
@@ -131,17 +97,22 @@ class ElMeuBody extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Icon(Icons.double_arrow, color: Colors.white),
-                  ),
-                  title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(items[index]),
-                        const Qu(),
-                      ]));
+                leading: Icon(Icons.shopping_cart),
+                title: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(items[index]),
+                      const Padding(
+                        padding: EdgeInsets.all(0.0),
+                        child: ComptadorEnter(),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => {removeItem(items[index])},
+                      )
+                    ]),
+              );
             },
           ),
         ),
