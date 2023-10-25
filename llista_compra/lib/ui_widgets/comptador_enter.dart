@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ComptadorEnter extends StatefulWidget {
-  const ComptadorEnter({super.key});
+class ComptadorEnter extends StatelessWidget {
+  final int index;
+
+  const ComptadorEnter({super.key, required this.index});
 
   @override
   // ignore: library_private_types_in_public_api

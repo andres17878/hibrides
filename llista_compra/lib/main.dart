@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:llista_compra/models/llista_articles.dart';
 import 'package:llista_compra/ui_widgets/comptador_enter.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LlistaArticles(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,65 +22,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _textEditingController = TextEditingController();
-  final List<String> _items = [];
-
-  void _addItemToList(String newItem) {
-    setState(() {
-      _items.add(newItem);
-      _textEditingController.clear();
-    });
-  }
-
-  void _removeItemFromList(String esborrat) {
-    setState(() {
-      _items.remove(esborrat);
-    });
-  }
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Llista compra'),
+        title: const Text('Llista compra'),
       ),
-      body: ElMeuBody(
-        textEditingController: _textEditingController,
-        addItemToList: _addItemToList,
-        items: _items,
-        removeItemFromList: _removeItemFromList,
-      ),
+      body: const ElMeuBody(),
     );
   }
 }
 
 class ElMeuBody extends StatelessWidget {
-  final TextEditingController textEditingController;
-  final List<String> items;
-  final Function(String) addItemToList;
-  final Function(String) removeItemFromList;
-
-  ElMeuBody({
-    required this.textEditingController,
-    required this.items,
-    required this.addItemToList,
-    required this.removeItemFromList,
-  });
-
-  void removeItem(String nom) {
-    removeItemFromList(nom);
-  }
+  const ElMeuBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -79,44 +50,53 @@ class ElMeuBody extends StatelessWidget {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(
-              labelText: 'Ingresi un article',
-              border: OutlineInputBorder(),
-            ),
-            onSubmitted: (text) {
-              if (text.isNotEmpty) {
-                addItemToList(text);
-              }
-            },
-          ),
+          child: Consumer<LlistaArticles>(builder: (context, model, _) {
+            return TextField(
+              controller: TextEditingController(),
+              decoration: const InputDecoration(
+                labelText: 'Ingresi un article',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (text) {
+                if (text.isNotEmpty) {
+                  model.afegeix(Article(id: null, nom: text, quantity: 1));
+                }
+              },
+            );
+          }),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                leading: Icon(Icons.double_arrow),
-                title: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(items[index]),
-                      Spacer(),
-                      const Padding(
-                        padding: EdgeInsets.all(0.0),
-                        child: ComptadorEnter(),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => {removeItem(items[index])},
-                      )
-                    ]),
-              );
-            },
-          ),
-        ),
+        Expanded(child: Consumer<LlistaArticles>(
+          builder: (context, value, child) {
+            return ListView.builder(
+              itemCount: value.count(),
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: const Icon(Icons.shopping_cart),
+                  title: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(value.itemAt(index).nom),
+                        Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(0.0),
+                              child: ComptadorEnter(),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                value.treu(value.itemAt(index));
+                              },
+                            ),
+                          ],
+                        )
+                      ]),
+                );
+              },
+            );
+          },
+        )),
       ],
     );
   }
