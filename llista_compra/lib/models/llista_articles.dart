@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class LlistaArticles extends ChangeNotifier {
   final List<Article> _articles = [];
@@ -11,6 +11,30 @@ class LlistaArticles extends ChangeNotifier {
   void treu(Article article) {
     _articles.remove(article);
     notifyListeners();
+  }
+
+  void incrementCounter(int index) {
+    if (index >= 0 && index < _articles.length) {
+      _articles[index] = Article(
+        id: _articles[index].id,
+        nom: _articles[index].nom,
+        quantity: _articles[index].quantity + 1,
+      );
+      notifyListeners();
+    }
+  }
+
+  void decrementCounter(int index) {
+    if (index >= 0 &&
+        index < _articles.length &&
+        _articles[index].quantity > 0) {
+      _articles[index] = Article(
+        id: _articles[index].id,
+        nom: _articles[index].nom,
+        quantity: _articles[index].quantity - 1,
+      );
+      notifyListeners();
+    }
   }
 
   Article itemAt(int index) {
@@ -27,9 +51,9 @@ class LlistaArticles extends ChangeNotifier {
 }
 
 class Article {
-  int? id;
-  String nom = "";
-  int? quantity = 0;
+  final int? id;
+  final String nom;
+  final int quantity;
 
   Article({
     required this.id,

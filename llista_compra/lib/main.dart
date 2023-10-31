@@ -79,12 +79,17 @@ class ElMeuBody extends StatelessWidget {
                         Text(value.itemAt(index).nom),
                         Row(
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(0.0),
-                              child: ComptadorEnter(),
+                            ComptadorEnter(
+                              comptador: value.itemAt(index).quantity,
+                              onIncrement: () {
+                                value.incrementCounter(index);
+                              },
+                              onDecrement: () {
+                                value.decrementCounter(index);
+                              },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () {
                                 value.treu(value.itemAt(index));
                               },
