@@ -7,13 +7,42 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => LlistaArticles(),
-      child: const MyApp(),
+      child: const Formulario(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Formulario extends StatefulWidget {
+  const Formulario({super.key});
+
+  @override
+  FormularioState createState() {
+    return FormularioState();
+  }
+}
+
+class FormularioState extends State<Formulario> {
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+        key: _formKey,
+        child: Column(children: [
+          TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          )
+        ]));
+  }
+}
+
+class ListaCompra extends StatelessWidget {
+  const ListaCompra({super.key});
 
   @override
   Widget build(BuildContext context) {
