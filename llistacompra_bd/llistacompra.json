@@ -1,23 +1,23 @@
 {
 
-"elements": [
+"articles": [
 
     {
         "id": 1,
-        "name": "Pa",
-        "quantity": 1
+        "nom": "Pa",
+        "quantitat": 1
     },
 
     {
         "id": 2,
         "name": "Llet",
-        "quantity": 1
+        "quantitat": 1
     },
 
     {
         "id": 3,
         "name": "Ous",
-        "quantity": 6
+        "quantitat": 6
     }
 
 ]

@@ -7,9 +7,28 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => LlistaArticles(),
-      child: const Formulario(),
+      child: const Llista(),
     ),
   );
+}
+
+class Llista extends StatelessWidget {
+  const Llista({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const appTitle = 'Llista de la compra';
+
+    return MaterialApp(
+      title: appTitle,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text(appTitle),
+        ),
+        body: const Formulario(),
+      ),
+    );
+  }
 }
 
 class Formulario extends StatefulWidget {
@@ -27,17 +46,54 @@ class FormularioState extends State<Formulario> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: _formKey,
-        child: Column(children: [
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Usuari"),
           TextFormField(
             validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter some text';
+              if (value == null || value.isEmpty) {
+                return 'Si us plau introdueix text';
+              }
+
+              if (value != "obret") {
+                return 'Usuari incorrecte';
               }
               return null;
             },
-          )
-        ]));
+          ),
+          const Text("Contrasenya"),
+          TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Si us plau introdueix text';
+              }
+
+              if (value != "sesam") {
+                return 'Contrasenya incorrecta';
+              }
+              return null;
+            },
+            obscureText: true,
+          ),
+          Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ListaCompra()),
+                    );
+                  }
+                },
+                child: const Text('Submit'),
+              )),
+        ],
+      ),
+    );
   }
 }
 
@@ -96,37 +152,45 @@ class ElMeuBody extends StatelessWidget {
         ),
         Expanded(child: Consumer<LlistaArticles>(
           builder: (context, value, child) {
-            return ListView.builder(
-              itemCount: value.count(),
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: const Icon(Icons.shopping_cart),
-                  title: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(value.itemAt(index).nom),
-                        Row(
-                          children: [
-                            ComptadorEnter(
-                              comptador: value.itemAt(index).quantity,
-                              onIncrement: () {
-                                value.incrementCounter(index);
-                              },
-                              onDecrement: () {
-                                value.decrementCounter(index);
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                value.treu(value.itemAt(index));
-                              },
-                            ),
-                          ],
-                        )
-                      ]),
-                );
+            return FutureBuilder<List<Article>>(
+              future: value.fetchArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: const Icon(Icons.shopping_cart),
+                        title: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(snapshot.data![index].nom.toString()),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(0.0),
+                                    child: ComptadorEnter(
+                                        article: (snapshot.data![index])),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      value.deleteArticle(
+                                          snapshot.data![index].id!);
+                                    },
+                                  ),
+                                ],
+                              )
+                            ]),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
+                return const CircularProgressIndicator();
               },
             );
           },
