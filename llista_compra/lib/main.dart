@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:llista_compra/login.dart';
 import 'package:llista_compra/models/llista_articles.dart';
 import 'package:llista_compra/ui_widgets/comptador_enter.dart';
 import 'package:provider/provider.dart';
@@ -7,98 +8,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => LlistaArticles(),
-      child: const Llista(),
+      child: const MyApp(),
     ),
   );
 }
 
-class Llista extends StatelessWidget {
-  const Llista({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Llista de la compra';
-
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
-        body: const Formulario(),
-      ),
-    );
-  }
-}
-
-class Formulario extends StatefulWidget {
-  const Formulario({super.key});
-
-  @override
-  FormularioState createState() {
-    return FormularioState();
-  }
-}
-
-class FormularioState extends State<Formulario> {
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Usuari"),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Si us plau introdueix text';
-              }
-
-              if (value != "obret") {
-                return 'Usuari incorrecte';
-              }
-              return null;
-            },
-          ),
-          const Text("Contrasenya"),
-          TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Si us plau introdueix text';
-              }
-
-              if (value != "sesam") {
-                return 'Contrasenya incorrecta';
-              }
-              return null;
-            },
-            obscureText: true,
-          ),
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ListaCompra()),
-                    );
-                  }
-                },
-                child: const Text('Submit'),
-              )),
-        ],
-      ),
-    );
-  }
-}
-
-class ListaCompra extends StatelessWidget {
-  const ListaCompra({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +23,7 @@ class ListaCompra extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const PaginaLogin(),
     );
   }
 }
