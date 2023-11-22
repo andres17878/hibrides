@@ -10,13 +10,13 @@
 
     {
         "id": 2,
-        "name": "Llet",
+        "nom": "Llet",
         "quantitat": 1
     },
 
     {
         "id": 3,
-        "name": "Ous",
+        "nom": "Ous",
         "quantitat": 6
     }
 
