@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'dart:convert';
 
 import 'package:llista_compra/models/llista_articles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PaginaLogin extends StatefulWidget {
   const PaginaLogin({super.key});
@@ -19,6 +20,8 @@ class _PaginaLoginState extends State<PaginaLogin> {
   TextEditingController passwordController = TextEditingController();
 
   void login(String email, String password, BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       String credentials = base64.encode(utf8.encode('$email:$password'));
       String authHeader = 'Basic $credentials';
@@ -30,6 +33,7 @@ class _PaginaLoginState extends State<PaginaLogin> {
         var data = jsonDecode(response.body.toString());
         var llista = LlistaArticles();
         llista.setApiKey(data['x-api-key']);
+        await prefs.setString('apiKey', data['x-api-key']);
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
