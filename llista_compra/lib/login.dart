@@ -53,6 +53,15 @@ class _PaginaLoginState extends State<PaginaLogin> {
     }
   }
 
+  void checkApiKey() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? apiKey = prefs.getString('apiKey');
+    if (apiKey != null) {
+      var llista = LlistaArticles();
+      llista.setApiKey(apiKey);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
