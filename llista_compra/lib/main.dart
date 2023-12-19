@@ -3,6 +3,7 @@ import 'package:llista_compra/login.dart';
 import 'package:llista_compra/models/llista_articles.dart';
 import 'package:llista_compra/ui_widgets/comptador_enter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
@@ -11,6 +12,15 @@ void main() {
       child: const MyApp(),
     ),
   );
+}
+
+void checkApiKey() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? apiKey = prefs.getString('apiKey');
+  if (apiKey != null) {
+    var llista = LlistaArticles();
+    llista.setApiKey(apiKey);
+  }
 }
 
 class MyApp extends StatelessWidget {
