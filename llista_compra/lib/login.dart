@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PaginaLogin extends StatefulWidget {
   const PaginaLogin({super.key});
-
   @override
   State<PaginaLogin> createState() => _PaginaLoginState();
 }
@@ -19,9 +18,28 @@ class _PaginaLoginState extends State<PaginaLogin> {
   TextEditingController usuariController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void login(String email, String password, BuildContext context) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      String? apiKey = prefs.getString("x_api_key");
+      if (apiKey != null) {
+        print("Tenim api_key $apiKey");
+        var llista = LlistaArticles();
+        llista.setApiKey(apiKey);
+        llista.fetchArticles().then((articles) {
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MyHomePage()),
+          );
+        }).catchError((_) => null);
+      }
+    });
+  }
 
+  void login(String email, String password, BuildContext context) async {
     try {
       String credentials = base64.encode(utf8.encode('$email:$password'));
       String authHeader = 'Basic $credentials';
@@ -33,7 +51,6 @@ class _PaginaLoginState extends State<PaginaLogin> {
         var data = jsonDecode(response.body.toString());
         var llista = LlistaArticles();
         llista.setApiKey(data['x-api-key']);
-        await prefs.setString('apiKey', data['x-api-key']);
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
@@ -50,15 +67,6 @@ class _PaginaLoginState extends State<PaginaLogin> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error')),
       );
-    }
-  }
-
-  void checkApiKey() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? apiKey = prefs.getString('apiKey');
-    if (apiKey != null) {
-      var llista = LlistaArticles();
-      llista.setApiKey(apiKey);
     }
   }
 
