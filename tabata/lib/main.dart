@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'dart:async';
 
 void main() {
@@ -14,11 +15,10 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   int _counter = 5;
+  int contadorCiclos = 1;
   Timer? _timer;
 
   void _startTimer() {
-    _counter = 5;
-
     if (_timer != null) {
       _timer?.cancel();
     }
@@ -28,7 +28,13 @@ class _MainAppState extends State<MainApp> {
         if (_counter > 0) {
           _counter--;
         } else {
-          timer.cancel();
+          // Cuando el temporizador llega a 0, reinicia el contador y el temporizador
+          _counter = 5;
+          contadorCiclos++;
+
+          if (contadorCiclos > 4) {
+            contadorCiclos = 1;
+          }
         }
       });
     });
@@ -45,7 +51,7 @@ class _MainAppState extends State<MainApp> {
               child: Container(
                 color: Colors.blue,
                 child: Center(
-                  child: Text('Header'),
+                  child: Text('Cycle #$contadorCiclos/4'),
                 ),
               ),
             ),
