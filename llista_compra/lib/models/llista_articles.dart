@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import "package:flutter/material.dart";
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,6 +75,16 @@ class LlistaArticles extends ChangeNotifier {
     apiKey = valor;
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("x_api_key", valor);
+  }
+
+  void saveLlista(List<LlistaArticles> llista) async {
+    var box = await Hive.openBox('llista');
+    box.put('llista', llista);
+  }
+
+  List<LlistaArticles> getLlista() {
+    var box = Hive.box('llista');
+    return box.get('llista', defaultValue: []);
   }
 
   void decrementa(Article article) async {

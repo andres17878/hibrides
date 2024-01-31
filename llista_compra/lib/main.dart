@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:llista_compra/login.dart';
 import 'package:llista_compra/models/llista_articles.dart';
 import 'package:llista_compra/ui_widgets/comptador_enter.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
   runApp(
     ChangeNotifierProvider(
       create: (context) => LlistaArticles(),
