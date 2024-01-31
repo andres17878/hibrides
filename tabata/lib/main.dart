@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(const MainApp());
@@ -15,26 +15,65 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   int _counter = 5;
-  int contadorCiclos = 1;
+  int _ciclo = 1;
   Timer? _timer;
+  String _titulo = 'Cicle 0/4';
 
-  void _startTimer() {
+  final player = AudioPlayer();
+
+  String fort = 'fort.mp3';
+  String fluix = 'fluix.mp3';
+
+  void start() {
     if (_timer != null) {
-      _timer?.cancel();
+      _timer!.cancel();
+      _timer = null;
     }
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_counter > 0) {
-          _counter--;
-        } else {
-          // Cuando el temporizador llega a 0, reinicia el contador y el temporizador
-          _counter = 5;
-          contadorCiclos++;
+    player.stop();
+    _ciclo = 1;
+    _counter = 5;
+    _titulo = 'Cicle ${_ciclo}/4';
+    timer();
+  }
 
-          if (contadorCiclos > 4) {
-            contadorCiclos = 1;
-          }
+  void comprova() {
+    setState(() {
+      _ciclo++;
+      _titulo = 'Cicle ${_ciclo}/4';
+      if (_ciclo < 4) {
+        timer();
+      }
+    });
+  }
+
+  Future<void> timer2() async {
+    _counter = 4;
+    await player.play(UrlSource(fluix));
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      setState(() {
+        if (_counter < 1) {
+          t.cancel();
+          player.stop();
+          comprova();
+        } else {
+          _counter--;
+        }
+      });
+    });
+  }
+
+  Future<void> timer() async {
+    _counter = 5;
+    await player.play(UrlSource(fort));
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      setState(() {
+        if (_counter < 1) {
+          t.cancel();
+          player.stop();
+          timer2();
+        } else {
+          _counter--;
         }
       });
     });
@@ -51,7 +90,7 @@ class _MainAppState extends State<MainApp> {
               child: Container(
                 color: Colors.blue,
                 child: Center(
-                  child: Text('Cycle #$contadorCiclos/4'),
+                  child: Text('Header'),
                 ),
               ),
             ),
@@ -70,7 +109,9 @@ class _MainAppState extends State<MainApp> {
                 color: Colors.green,
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: _startTimer,
+                    onPressed: () {
+                      start();
+                    },
                     child: Text('Start / Reset'),
                   ),
                 ),
