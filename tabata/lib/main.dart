@@ -90,7 +90,7 @@ class _MainAppState extends State<MainApp> {
               child: Container(
                 color: Colors.blue,
                 child: Center(
-                  child: Text('Header'),
+                  child: Text(_titulo),
                 ),
               ),
             ),
@@ -99,7 +99,7 @@ class _MainAppState extends State<MainApp> {
               child: Container(
                 color: Colors.white,
                 child: Center(
-                  child: Text('Main Content: $_counter'),
+                  child: Text('$_counter'),
                 ),
               ),
             ),
