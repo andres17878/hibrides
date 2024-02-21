@@ -37,4 +37,17 @@ class Shared {
         jsonDecode(item)['descripcio'] == record.descripcio);
     await prefs.setStringList('records', records);
   }
+
+  static Future<void> editRecord(
+      Record record, String newTitol, String newDescripcio) async {
+    final SharedPreferences prefs = await _prefs;
+    List<String> records = prefs.getStringList('records') ?? [];
+    records.removeWhere((item) =>
+        jsonDecode(item)['titol'] == record.titol &&
+        jsonDecode(item)['descripcio'] == record.descripcio);
+    record.titol = newTitol;
+    record.descripcio = newDescripcio;
+    records.add(jsonEncode(record));
+    await prefs.setStringList('records', records);
+  }
 }

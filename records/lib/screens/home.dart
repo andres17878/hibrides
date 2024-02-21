@@ -47,14 +47,23 @@ class _HomeState extends State<Home> {
                   return ListTile(
                     title: Text(records[index].titol),
                     subtitle: Text(records[index].descripcio),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () async {
-                        await Shared.removeRecord(records[index]);
-                        setState(() {
-                          records.removeAt(index);
-                        });
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await Shared.removeRecord(records[index]);
+                            setState(() {
+                              records.removeAt(index);
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   );
                 },
