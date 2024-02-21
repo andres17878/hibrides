@@ -20,31 +20,51 @@ class _NewRecord extends State<NewRecord> {
     super.dispose();
   }
 
-  void handleTitolChange(String value) {
+  void handleTitolChange() {
     setState(() {
-      titol = value;
+      titol = titolController.text.trim();
     });
   }
 
-  void handleDescripcioChange(String value) {
+  void handleDescripcioChange() {
     setState(() {
-      descripcio = value;
+      descripcio = descripcioController.text.trim();
     });
   }
 
-  void handleBack() {
-    Navigator.pop(context);
+  void handleBack() async {
+    if (titol.isEmpty) {
+      if (descripcio.isEmpty) {
+        Navigator.pop(context);
+        return;
+      } else {
+        String titulo = descripcio.split('\n')[0];
+        if (titulo.length > 20) {
+          titulo = titulo.substring(0, 20);
+        }
+        setState(() {
+          titol = titulo;
+        });
+      }
+    }
+
+    Record recordObject = Record(titol: titol, descripcio: descripcio);
+
+    try {
+      await Shared().addRecord(recordObject);
+    } catch (e) {
+      print(e);
+    } finally {
+      Navigator.pop(context, 'refresh');
+      return;
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    titolController.addListener(() {
-      handleTitolChange(titolController.text);
-    });
-    descripcioController.addListener(() {
-      handleDescripcioChange(descripcioController.text);
-    });
+    titolController.addListener(handleTitolChange);
+    descripcioController.addListener(handleDescripcioChange);
   }
 
   @override

@@ -18,6 +18,14 @@ class Record {
     };
   }
 
+  void getTitol(String titol) {
+    this.titol = titol;
+  }
+
+  void getDescripcio(String descripcio) {
+    this.descripcio = descripcio;
+  }
+
   @override
   String toString() {
     return 'Record{titol: $titol, descripcio: $descripcio}';

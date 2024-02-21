@@ -7,35 +7,34 @@ class Shared {
   static final Future<SharedPreferences> _prefs =
       SharedPreferences.getInstance();
 
-  static Future<List<Record>> getRecords() async {
+  Future getRecords() async {
     final SharedPreferences prefs = await _prefs;
-    final List<String> records = prefs.getStringList('records') ?? [];
-    return records
+    final List<String> recordsString = prefs.getStringList('records') ?? [];
+    final List<Record> records = recordsString
         .map((record) => Record.fromJson(jsonDecode(record)))
         .toList();
+    return records;
   }
 
-  static Future<bool> setRecords(List<Record> records) async {
+  Future setRecords(List<Record> records) async {
     final SharedPreferences prefs = await _prefs;
     final List<String> recordsString =
         records.map((record) => jsonEncode(record)).toList();
     return prefs.setStringList('records', recordsString);
   }
 
-  static Future<bool> addRecord(Record record) async {
+  Future<void> addRecord(Record record) async {
     final List<Record> records = await getRecords();
     records.add(record);
     return setRecords(records);
   }
 
-  static Future<bool> removeRecord(Record record) async {
-    final List<Record> records = await getRecords();
-    records.remove(record);
-    return setRecords(records);
-  }
-
-  static Future<bool> clearRecords() async {
+  static Future<void> removeRecord(Record record) async {
     final SharedPreferences prefs = await _prefs;
-    return prefs.remove('records');
+    List<String> records = prefs.getStringList('records') ?? [];
+    records.removeWhere((item) =>
+        jsonDecode(item)['titol'] == record.titol &&
+        jsonDecode(item)['descripcio'] == record.descripcio);
+    await prefs.setStringList('records', records);
   }
 }
