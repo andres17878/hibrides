@@ -13,10 +13,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  TextEditingController _textEditingController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    Shared().getRecords().then((value) {
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    await Shared().getRecords().then((value) {
       setState(() {
         records = value;
       });
@@ -27,54 +33,50 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          backgroundColor: Colors.lightBlueAccent,
-          appBar: AppBar(
-              backgroundColor: Colors.blue,
-              title:
-                  const Text('Records', style: TextStyle(color: Colors.white))),
-          body: FutureBuilder(
-            future: Shared().getRecords(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else {
-                return ListView.builder(
-                  itemCount: records.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(records[index].titol),
-                      subtitle: Text(records[index].descripcio),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          await Shared.removeRecord(records[index]);
-                          setState(() {
-                            records.removeAt(index);
-                          });
-                        },
-                      ),
-                    );
-                  },
-                );
+        backgroundColor: Colors.lightBlueAccent,
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          title: const Text('Records', style: TextStyle(color: Colors.white)),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: records.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(records[index].titol),
+                    subtitle: Text(records[index].descripcio),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        await Shared.removeRecord(records[index]);
+                        setState(() {
+                          records.removeAt(index);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          backgroundColor: Colors.blue,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewRecord()),
+            ).then((value) {
+              if (value != null) {
+                _refresh();
               }
-            },
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            backgroundColor: Colors.blue,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NewRecord()),
-              ).then((value) {
-                if (value != null) {
-                  setState(() {});
-                }
-              });
-            },
-          )),
+            });
+          },
+        ),
+      ),
     );
   }
 }
